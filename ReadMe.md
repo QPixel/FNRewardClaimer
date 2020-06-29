@@ -36,8 +36,8 @@ You must run this first on a OS that has GUI Support, then you can copy the file
 
 - [Axios](https://www.npmjs.com/package/axios)
 - [Axios-CookieJar-Support](https://www.npmjs.com/package/axios-cookiejar-support)
-- [EpicGames-Client-Login-Adapter](https://www.npmjs.com/package/EpicGames-Client-Login-Adapter)
-- [Discord.JS](https://www.npmjs.com/package/Discord.js)
+- [EpicGames-Client-Login-Adapter](https://www.npmjs.com/package/epicgames-client-login-adapter)
+- [Discord.JS](https://www.npmjs.com/package/discord.js)
 
 ### Made by QPixel
 
