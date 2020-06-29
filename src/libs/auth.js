@@ -1,9 +1,9 @@
 'use-strict';
 /* eslint-disable no-mixed-spaces-and-tabs */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-const axios = require('axios');
+const axios = require('axios').default;
 const tough = require('tough-cookie');
-const axiosCookieJarSupport = require('axios-cookiejar-support');
+const ClientLoginAdapter = require('epicgames-client-login-adapter');
+const axiosCookieJarSupport = require('axios-cookiejar-support').default;
 const tokens = require('../utils/tokens');
 const Endpoints = require('../utils/endpoints');
 const { stringify } = require('querystring');
@@ -12,56 +12,42 @@ axiosCookieJarSupport(axios);
 const cookieJar = new tough.CookieJar();
 const deviceAuthPath = `${__dirname}/deviceAuthDetails.json`;
 const exchangeCode = 'd2ad778847474e75b0d73da376fd8551';
+const {email, password} = require('../config.json');
 
-export class Auth {
-  public userAgent =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36';
-  async GenerateDeviceAuth(code: any) {
+
+/*
+  Credit to ThisNils for the device auth example.
+  https://gist.github.com/ThisNils/23c5dc9a49164e5419219a1654c0827c
+
+*/
+
+class Auth {
+  constructor () {
+    this.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36';
+  }
+  
+  async GenerateDeviceAuth(code) {
     if (!code) {
       const instance = axios.create({ jar: cookieJar, withCredentials: true });
+      
+      // As I am now using a library to get the exchange code... I don't need the requests for reputation & csrf.
+      // I'm not going to remove it though, as I want to implement my own library for bypassing captcha
+      console.log('[AUTH]','Requesting reputation');
+      // await instance.get(Endpoints.API_REPUTATION, { headers: { 'User-Agent': this.userAgent }, responseType: 'json' });
+      console.log('[AUTH]','Requesting csrf');
+      // await instance.get(Endpoints.CSRF_TOKEN, { headers: { 'User-Agent': this.userAgent } });
+      //const csrf = cookieJar.toJSON().cookies.find((x) => x.key === 'XSRF-TOKEN');
 
-      await instance.get(Endpoints.API_REPUTATION, { headers: { 'User-Agent': this.userAgent }, responseType: 'json' });
 
-      await instance.get(Endpoints.CSRF_TOKEN, { headers: { 'User-Agent': this.userAgent } });
-
-      const csrf = cookieJar.toJSON().cookies.find((x) => x.key === 'XSRF-TOKEN');
-
-      const dataAuth = {
-        email: email,
-        password: password,
-        rememberMe: false,
-      };
-
-      try {
-        await instance.post(Endpoints.API_LOGIN, dataAuth, {
-          headers: {
-            'x-xsrf-token': csrf.value,
-            'Content-Type': 'application/json',
-            'User-Agent': this.userAgent,
-          },
-        });
-      } catch (err) {
-        await instance.post(Endpoints.API_LOGIN, dataAuth, {
-          headers: {
-            'x-xsrf-token': csrf.value,
-            'Content-Type': 'application/json',
-            'User-Agent': this.userAgent,
-          },
-        });
-      }
-
-      code = await instance
-        .get(Endpoints.API_EXCHANGE_CODE, {
-          headers: {
-            'x-xsrf-token': csrf.value,
-            'User-Agent': this.userAgent,
-          },
-          responseType: 'json',
-        })
-        .then((res) => {
-          return res.data;
-        });
+      console.log('[AUTH]','Requesting LOGIN');
+      const clientLoginAdapter = await ClientLoginAdapter.init({
+        login: email,
+        password: password
+      });
+      code = await clientLoginAdapter.getExchangeCode();
+      await clientLoginAdapter.close();
     }
+    console.log(code);
 
     const iosToken = await axios
       .post(Endpoints.OAUTH_TOKEN, stringify({ grant_type: 'exchange_code', exchange_code: code }), {
@@ -91,7 +77,7 @@ export class Auth {
       secret: deviceAuthDetails.secret,
     };
   }
-  async getDeviceAuth(exchange: string) {
+  async getDeviceAuth(exchange) {
     let deviceAuthDetails;
     let deviceAuthFileBuffer = '';
     try {
@@ -105,14 +91,14 @@ export class Auth {
       deviceAuthDetails = await this.GenerateDeviceAuth(exchange);
       await fs.writeFile(deviceAuthPath, JSON.stringify(deviceAuthDetails));
     }
-    const dataAuth = {
+    const authData = {
       grant_type: 'device_auth',
       account_id: deviceAuthDetails.accountId,
       device_id: deviceAuthDetails.deviceId,
       secret: deviceAuthDetails.secret,
     };
     const fortniteToken = await axios
-      .post(Endpoints.OAUTH_TOKEN, stringify(dataAuth), {
+      .post(Endpoints.OAUTH_TOKEN, stringify(authData), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: `basic ${tokens.launcherToken}`,
@@ -130,8 +116,8 @@ export class Auth {
    * @param {string} exchange Token from getOAuthExchangeToken()
    * @returns {object} JSON Object of result
    */
-  async getFortniteOAuthToken(exchange: any) {
-    const headers: any = {};
+  async getFortniteOAuthToken(exchange) {
+    const headers = {};
     headers['Authorization'] = `basic ${tokens.fortniteToken}`;
     const res = await axios({
       url: Endpoints.OAUTH_TOKEN,
@@ -144,10 +130,10 @@ export class Auth {
         TOKEN_TYPE: 'eg1',
       }),
     })
-      .then((response: any) => {
+      .then((response) => {
         return response.data.access_token;
       })
-      .catch((error: any) => {
+      .catch((error) => {
         if (error.response) {
           console.log(error.response.data);
           console.log(error.reponse.status);
@@ -164,29 +150,40 @@ export class Auth {
    * @param {string} token access_token from login data
    * @returns {object} Json objext of result
    */
-  async getOAuthExchangeToken(token: any) {
-    const headers: any = {};
+  async getOAuthExchangeToken(token) {
+    const headers = {};
     headers['Authorization'] = `bearer ${token}`;
     const res = await axios({
       url: Endpoints.OAUTH_EXCHANGE,
       headers: headers,
       method: 'GET',
     })
-      .then((response: any) => {
+      .then((response) => {
         return response.data.code;
       })
-      .catch(function (error: any) {
+      .catch(function (error) {
         return { error: `[getOAuthExchangeToken] Unknown response from gateway ${Endpoints.OAUTH_EXCHANGE}` };
       });
     return res;
   }
-  async login(fixAuth: boolean, exchangeCode: string) {
-    if (fixAuth != true) {
-      const token = await this.getDeviceAuth('aaaaaabbbbcccwe');
+
+  /**
+   *
+   * @param {string} newAuth,fixAuth,null.
+   * @returns {object} Json objext of result
+   */
+  async login(authType , exchangeCode) {
+    if (authType === 'newAuth') {
+      await this.GenerateDeviceAuth();
+      const token = await this.getDeviceAuth();
       return token;
-    } else {
+    } else if (authType === 'fixauth'){
       const token = await this.getDeviceAuth(exchangeCode);
       return token;
-    }
+    } else {
+      const token = await this.getDeviceAuth('');
+      return token;
+    }   
   }
 }
+module.exports = Auth;

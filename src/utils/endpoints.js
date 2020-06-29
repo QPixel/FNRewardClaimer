@@ -1,8 +1,8 @@
-export default Object.freeze({
+const Endpoints =  Object.freeze({
   // New Logins
   CSRF_TOKEN: 'https://www.epicgames.com/id/api/csrf',
   API_LOGIN: 'https://www.epicgames.com/id/api/login',
-  API_EXCHANGE_CODE: 'https://www.epicgames.com/id/api/exchange',
+  API_EXCHANGE_CODE: 'https://www.epicgames.com/id/api/exchange/generate',
   API_REPUTATION: 'https://www.epicgames.com/id/api/reputation',
 
   // Login
@@ -22,8 +22,9 @@ export default Object.freeze({
   LAUNCHER: 'https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/',
   // Fortnite Public Service
   STAGING_API: 'https://fortnite-public-service-stage.ol.epicgames.com/fortnite/api/version',
-  PUBLIC_BASE_URL: 'https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/',
+  PUBLIC_BASE_URL: 'https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api',
   CLOUD_STORAGE: 'https://fortnite-public-service-prod11.ol.epicgames.com/fortnite/api/cloudstorage/system',
   // LIGHTSWITCH
   LIGHT_SWITCH: 'https://lightswitch-public-service-prod06.ol.epicgames.com/lightswitch/api/service/bulk/status',
 });
+module.exports = Endpoints;
