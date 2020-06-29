@@ -34,9 +34,10 @@ You must run this first on a OS that has GUI Support, then you can copy the file
 
 ## Dependencies
 
-- [Axios](https://www.nodejs.com/package/axios)
-- [Axios-CookieJar-Support](https://www.nodejs.com/package/axios-cookiejar-support)
-- [EpicGames-Client-Login-Adapter](https://www.nodejs.com/package/EpicGames-Client-Login-Adapter)
+- [Axios](https://www.npmjs.com/package/axios)
+- [Axios-CookieJar-Support](https://www.npmjs.com/package/axios-cookiejar-support)
+- [EpicGames-Client-Login-Adapter](https://www.npmjs.com/package/EpicGames-Client-Login-Adapter)
+- [Discord.JS](https://www.npmjs.com/package/Discord.js)
 
 ### Made by QPixel
 
