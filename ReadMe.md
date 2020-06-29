@@ -4,9 +4,11 @@
 
 ## I made this discord bot to help anyone who is to lazy to claim their STW rewards.
 
+If you have any problems while running this bot, please DM me on discord at QPixel#0001
+
 ### Prerequisites
 
-> You need to install node in order to run this app.
+> ##### You need to install NodeJS in order to run this app and have bought STW
 
 ### How to Run
 
@@ -21,6 +23,15 @@
 2. Insert your Credentials and Prefix (default prefix is &)
 3. Save and run the bot using the instructions above
 
+---
+
+## Warning..
+
+This program has a dependency that uses puppeteer to login in.
+You must run this first on a OS that has GUI Support, then you can copy the files to a server.
+
+#### I am not responsible for any BANNED accounts...
+
 ## Dependencies
 
 - [Axios](https://www.nodejs.com/package/axios)
@@ -28,3 +39,5 @@
 - [EpicGames-Client-Login-Adapter](https://www.nodejs.com/package/EpicGames-Client-Login-Adapter)
 
 ### Made by QPixel
+
+#### If you want this taken down, email me with an official EpicGames Email at contact@qpixel.me
