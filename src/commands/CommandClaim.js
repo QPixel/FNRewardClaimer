@@ -25,11 +25,11 @@ module.exports = {
         let items = notification.items;
         if (items.length === 0) {
             embed.setDescription(`You have already claimed your items! Days logged in: ${notification.daysLoggedIn}`);
-            embed.addField('No items to claim....');
+            embed.addField('No items to claim....', 'rip', true);
             return message.channel.send(embed);
         }
         embed.setDescription(`You have claimed ${items.length} items! Days logged in: ${notification.daysLoggedIn}`);
-        embed.addField('Claimed:', '```json ', JSON.stringify(items, null, 4), '```');
+        embed.addField('Claimed:', '```json\n' + JSON.stringify(items, null, 4) + '```');
 
         message.channel.send(embed);
     }
