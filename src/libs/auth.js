@@ -13,7 +13,7 @@ const cookieJar = new tough.CookieJar();
 const deviceAuthPath = `${__dirname}/deviceAuthDetails.json`;
 const exchangeCode = 'd2ad778847474e75b0d73da376fd8551';
 const {email, password} = require('../config.json');
-
+const readline = require('readline');
 
 /*
   Credit to ThisNils for the device auth example.
@@ -24,36 +24,34 @@ const {email, password} = require('../config.json');
 class Auth {
   constructor () {
     this.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36';
+    this.exchangeCode = '';
   }
-  
   async GenerateDeviceAuth(code) {
-    if (!code) {
-      const instance = axios.create({ jar: cookieJar, withCredentials: true });
-      
-      // As I am now using a library to get the exchange code... I don't need the requests for reputation & csrf.
-      // I'm not going to remove it though, as I want to implement my own library for bypassing captcha
-      console.log('[AUTH]','Requesting reputation');
-      // await instance.get(Endpoints.API_REPUTATION, { headers: { 'User-Agent': this.userAgent }, responseType: 'json' });
-      console.log('[AUTH]','Requesting csrf');
-      // await instance.get(Endpoints.CSRF_TOKEN, { headers: { 'User-Agent': this.userAgent } });
-      //const csrf = cookieJar.toJSON().cookies.find((x) => x.key === 'XSRF-TOKEN');
+    console.log('[AUTH]','Requesting Authorization_code');
+    const tempAccessToken = await axios.post(Endpoints.OAUTH_TOKEN, stringify({ grant_type: 'authorization_code', code: code}), {
+      headers: {
+        Authorization: `basic ${tokens.fortniteToken}`,
+        'User-Agent': this.userAgent
+      }
+    }).then((res) => {
+      return res.data.access_token;
+    });
+    console.log('[AUTH]', 'Requesting Exchange')
+    await axios.get(Endpoints.OAUTH_EXCHANGE, {
+      headers: {
+        Authorization: `bearer ${tempAccessToken}`,
+        'User-Agent': this.userAgent
+      }
+    }).then((res) => {
+      this.exchangeCode = res.data.code
+    });
 
-
-      console.log('[AUTH]','Requesting LOGIN');
-      const clientLoginAdapter = await ClientLoginAdapter.init({
-        login: email,
-        password: password
-      });
-      code = await clientLoginAdapter.getExchangeCode();
-      await clientLoginAdapter.close();
-    }
-    console.log(code);
-
+    console.log('[AUTH]','Requesting OAUTH Token');
     const iosToken = await axios
-      .post(Endpoints.OAUTH_TOKEN, stringify({ grant_type: 'exchange_code', exchange_code: code }), {
+      .post(Endpoints.OAUTH_TOKEN, stringify({ grant_type: 'exchange_code', exchange_code: this.exchangeCode }), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `basic ${tokens.launcherToken}`,
+          Authorization: `basic ${tokens.ios_token}`,
           'User-Agent': this.userAgent,
         },
         responseType: 'json',
@@ -180,7 +178,7 @@ class Auth {
     } else if (authType === 'fixauth'){
       const token = await this.getDeviceAuth(exchangeCode);
       return token;
-    } else {
+    } else if (authType === 'authorization_code') {
       const token = await this.getDeviceAuth('');
       return token;
     }   

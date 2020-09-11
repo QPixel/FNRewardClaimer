@@ -4,7 +4,7 @@ const Endpoints =  Object.freeze({
   API_LOGIN: 'https://www.epicgames.com/id/api/login',
   API_EXCHANGE_CODE: 'https://www.epicgames.com/id/api/exchange/generate',
   API_REPUTATION: 'https://www.epicgames.com/id/api/reputation',
-
+  API_AUTHORIZATION_CODE: 'https://www.epicgames.com/id/api/redirect?clientId=ec684b8c687f479fadea3cb2ad83f5c6&responseType=code',
   // Login
   OAUTH_TOKEN: 'https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token',
   OAUTH_EXCHANGE: 'https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/exchange',

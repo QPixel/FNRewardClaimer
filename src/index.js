@@ -19,15 +19,6 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-try {
-  auth.login(null, '');
-} catch (err) {
-  auth.login('newAuth', '');
-}
-
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-});
 
 client.on("message", (message) => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -44,4 +35,20 @@ client.on("message", (message) => {
   }
 });
 
-client.login(token);
+
+function startUp() {
+  try {
+    auth.login(null, '');
+  } catch (err) {
+    auth.login('newAuth', '');
+  }
+  client.on("ready", (channel) => {
+    console.log(`\n Logged in as ${client.user.tag}!`);
+    console.log(`If this is the first time using the bot, please run ${prefix}setupauth {authorization_code} to setup the auth`);
+  });
+  client.login(token);
+}
+
+startUp();
+
+
