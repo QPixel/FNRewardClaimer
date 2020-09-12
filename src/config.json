@@ -1,6 +1,4 @@
 {
   "token": "INSERT TOKEN HERE",
-  "prefix": "&",
-  "email": "INSERT EMAIL HERE",
-  "password": "INSERT PASSWORD HERE"
+  "prefix": "&"
 }
