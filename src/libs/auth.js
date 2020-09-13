@@ -181,7 +181,10 @@ class Auth {
     } else if (authType === 'authorization_code') {
       const token = await this.getDeviceAuth('');
       return token;
-    }   
+    } else {
+      const token = await this.getDeviceAuth('');
+      return token;
+    }
   }
 }
 module.exports = Auth;
