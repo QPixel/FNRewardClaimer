@@ -2,7 +2,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 const axios = require('axios').default;
 const tough = require('tough-cookie');
-const ClientLoginAdapter = require('epicgames-client-login-adapter');
 const axiosCookieJarSupport = require('axios-cookiejar-support').default;
 const tokens = require('../utils/tokens');
 const Endpoints = require('../utils/endpoints');

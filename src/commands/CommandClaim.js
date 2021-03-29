@@ -12,7 +12,6 @@ module.exports = {
         let token = await auth.login(null, '');
         let {accountId} = require('../libs/deviceAuthDetails.json');
         const embed = new MessageEmbed().setTitle('FNRewardClaimer').setFooter('FNRewardClaimer, a bot made by QPixel').setTimestamp();
-
         let response = await axios.post(`${PUBLIC_BASE_URL}/game/v2/profile/${accountId}/client/ClaimLoginReward?profileId=campaign&rvn=-1`, {}, {headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -28,8 +27,14 @@ module.exports = {
             embed.addField('No items to claim....', 'rip', true);
             return message.channel.send(embed);
         }
-        embed.setDescription(`You have claimed ${items.length} items! Days logged in: ${notification.daysLoggedIn}`);
-        embed.addField('Claimed:', '```json\n' + JSON.stringify(items, null, 4) + '```');
+        embed.setDescription(`You have claimed ${items.length} item${items.length > 1 ? "s" : ""} Days logged in: ${notification.daysLoggedIn}`);
+
+        items.forEach(item => {
+					embed.addField("Item Type", item.itemType)
+					embed.addField("Item Guid", item.itemGuid)
+					embed.addField("Item Profile", item.itemProfile)
+					embed.addField("Item Quantity", item.quantity)
+				})
 
         message.channel.send(embed);
     }

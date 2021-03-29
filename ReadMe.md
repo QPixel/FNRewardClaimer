@@ -19,19 +19,15 @@ If you have any problems while running this bot, please DM me on discord at QPix
 
 ### How to configure
 
-1. Open up the config.json file in src
-2. Insert your Credentials and Prefix (default prefix is &)
-3. Save and run the bot using the instructions above
+1. Make a copy of config.template.json and rename it to config.json
+2. Open up the config.json
+3. Insert your Credentials and Prefix (default prefix is &)
+4. Save and run the bot using the instructions above
 
 ---
 
 ## Warning..
-
-This program has a dependency that uses puppeteer to login in.
-You must run this first on a OS that has GUI Support, then you can copy the files to a server.
-
 #### I am not responsible for any BANNED accounts...
-
 ## Dependencies
 
 - [Axios](https://www.npmjs.com/package/axios)

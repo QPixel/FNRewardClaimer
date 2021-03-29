@@ -1,0 +1,7 @@
+{
+  "token": "INSERT TOKEN HERE",
+  "prefix": "&",
+	"channelID": "",
+	"guildID": "",
+	"autoClaim": false
+}

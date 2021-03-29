@@ -1,5 +1,5 @@
 ﻿node_modules
 .vscode
-src/libs/deviceAuthDetails.json
+src/libs/*.json
 src/config.json
 docker-compose.yml

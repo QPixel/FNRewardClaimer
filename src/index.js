@@ -1,7 +1,8 @@
 const Discord = require("discord.js");
 const fs = require("fs");
-const { prefix, token } = require("./config.json");
+const { prefix, token, autoClaim, channelID, guildID } = require("./config.json");
 const path = require("path");
+const cron = require("node-cron");
 const client = new Discord.Client();
 const Auth = require("./libs/auth");
 const auth = new Auth();
@@ -20,11 +21,20 @@ for (const file of commandFiles) {
 }
 
 
+const autoRequest = () => {
+	const command = client.commands.get("autoclaim");
+	const channel = client.channels.cache.get(channelID);
+	try {
+		command.execute(channel);
+	} catch (e) {
+		return channel.send("Auto claim failed");
+	}
+}
 client.on("message", (message) => {
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+	if (!message.content.startsWith(prefix) || message.author.bot) return;
   const args = message.content.slice(prefix.length).split(/ +/);
   const commandName = args.shift().toLowerCase();
-
+	
   if (!client.commands.has(commandName)) return;
   const command = client.commands.get(commandName);
   try {
@@ -45,10 +55,15 @@ function startUp() {
   client.on("ready", (channel) => {
     console.log(`\n Logged in as ${client.user.tag}!`);
     console.log(`If this is the first time using the bot, please run ${prefix}setupauth {authorization_code} to setup the auth`);
+		if (autoClaim === true) {
+			cron.schedule("* * * 1 * *", () => {
+				autoRequest();
+			})
+		}
   });
   client.login(token);
 }
 
-startUp();
+startUp();  
 
 
