@@ -1,4 +1,4 @@
-# FNRewardClaimer
+# FNRewardClaimer (NOT MAINTAINED ANYMORE)
 
 ---
 
