@@ -1,8 +1,8 @@
 {
   "name": "fnrewardclaimer",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Discord Bot to auto claim stw rewards",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "node ./src/index.js"
   },
